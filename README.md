@@ -4,7 +4,7 @@ An AI-powered platform that helps users plan corporate offsites. Describe your e
 
 ## Live Demo
 
-[text](https://ai-event-concierge-nu.vercel.app/)
+[AI Event Concierge](https://ai-event-concierge-nu.vercel.app/)
 
 ## Tech Stack
 
