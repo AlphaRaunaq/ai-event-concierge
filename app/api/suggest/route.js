@@ -32,7 +32,43 @@ async function fetchVenueImage(venueName, location, venueType) {
   }
 }
 
+const rateLimitMap = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 10;
+
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, start: now });
+    return false;
+  }
+
+  const entry = rateLimitMap.get(ip);
+
+  if (now - entry.start > windowMs) {
+    // Reset window
+    rateLimitMap.set(ip, { count: 1, start: now });
+    return false;
+  }
+
+  if (entry.count >= maxRequests) {
+    return true;
+  }
+
+  entry.count++;
+  return false;
+}
+
 export async function POST(request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  if (isRateLimited(ip)) {
+    return Response.json(
+      { error: "Too many requests. Please wait a minute before trying again." },
+      { status: 429 },
+    );
+  }
+
   try {
     const { query } = await request.json();
 
@@ -62,10 +98,9 @@ export async function POST(request) {
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-
-    // Safely parse Gemini's response
     const cleaned = text.replace(/```json|```/g, "").trim();
     const suggestion = JSON.parse(cleaned);
+
 
     const imageUrl = await fetchVenueImage(
       suggestion.venueName,
