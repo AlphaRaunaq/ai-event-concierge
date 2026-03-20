@@ -67,7 +67,7 @@ export default function Home() {
 
         {/* Search */}
         <div>
-          <p className="text-gray-400 text-sm mb-4">Describe your corporate event and get an AI-generated venue proposal instantly.</p>
+          <p className="text-gray-400 text-sm mb-4">Describe your corporate event and get a venue proposal instantly.</p>
           <form onSubmit={handleSubmit} className="flex gap-3">
             <input
               type="text"
